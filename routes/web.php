@@ -22,16 +22,20 @@ Route::middleware('sitesetting')->group(function (){
     Route::get('/contact',[PageController::class,'contact'])->name('contact');
     Route::post('/contact/store',[AjaxController::class,'contactStore'])->name('contact.store');
     Route::get('/cart',[CartController::class,'index'])->name('cart');
-    Route::post('/cart',[CartController::class,'add'])->name('cart.add');
+    Route::post('/cart/add',[CartController::class,'add'])->name('cart.add');
+    Route::post('/cart/remove',[CartController::class,'remove'])->name('cart.remove');
 });
 
 
-Route::prefix('/admin')->group(function (){
-    Route::get('/', [SliderController::class, 'index'])->name('admin');
-    Route::prefix('/category')->group(function (){
-        Route::get('/list',[CategoryController::class,'index'])->name('category-list');
-        Route::get('/add',[CategoryController::class,'addShow'])->name('category-add');
-        Route::post('/add',[CategoryController::class,'add']);
-    });
 
-});
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

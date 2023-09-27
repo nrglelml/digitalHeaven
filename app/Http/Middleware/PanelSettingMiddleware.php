@@ -10,7 +10,7 @@ use Closure;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
-class SiteSettingMiddleware
+class PanelSettingMiddleware
 {
     /**
      * Handle an incoming request.
@@ -25,10 +25,8 @@ class SiteSettingMiddleware
         $settings = SiteSetting::all()->pluck('data','name')->toArray();
 
 
-        $categories = Category::where('status','1')->with('subcategory')->withCount('items')->get();
 
-
-        view()->share(['settings'=>$settings,'categories'=>$categories]);
+        view()->share(['settings'=>$settings]);
 
         return $next($request);
     }

@@ -16,6 +16,15 @@
     <div class="site-section">
         <div class="container">
             <div class="row">
+                <div class="col-lg-12">
+                    @if (session()->get('success'))
+                        <div class="alert alert-success">{{session()->get('success')}}</div>
+                    @endif
+
+                    @if (session()->get('error'))
+                        <div class="alert alert-danger">{{session()->get('error')}}</div>
+                    @endif
+                </div>
                 <div class="col-md-6">
                     <img src="{{asset($products->image)}}" alt="{{$products->short_text}}" class="img-fluid">
                 </div>
@@ -27,24 +36,24 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{$products->id}}">
                         <div class="mb-1 d-flex">
-                            <label for="option-xs" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-xs" name="color" {{$products->color == 'Siyah' ? 'checked' : ''}} value="Siyah"></span> <span class="d-inline-block text-black">Siyah</span>
+                            <label for="option-black" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-black" name="color" {{$products->color == 'Siyah' ? 'checked' : ''}} value="Siyah"></span> <span class="d-inline-block text-black">Siyah</span>
                             </label>
-                            <label for="option-s" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-s" name="color" {{$products->color == 'Silver' ? 'checked' : ''}}  value="Silver"></span> <span class="d-inline-block text-black">Silver</span>
+                            <label for="option-silver" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-silver" name="color" {{$products->color == 'Silver' ? 'checked' : ''}}  value="Silver"></span> <span class="d-inline-block text-black">Silver</span>
                             </label>
 
-                            <label for="option-m" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-m" name="color" {{$products->color == 'Gold' ? 'checked' : ''}}  value="Gold"></span> <span class="d-inline-block text-black">Gold</span>
+                            <label for="option-gold" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-gold" name="color" {{$products->color == 'Gold' ? 'checked' : ''}}  value="Gold"></span> <span class="d-inline-block text-black">Gold</span>
                             </label>
-                            <label for="option-l" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-l" name="color" {{$products->color == 'Mavi' ? 'checked' : ''}}  value="Mavi"></span> <span class="d-inline-block text-black">Mavi</span>
+                            <label for="option-blue" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-blue" name="color" {{$products->color == 'Mavi' ? 'checked' : ''}}  value="Mavi"></span> <span class="d-inline-block text-black">Mavi</span>
                             </label>
-                            <label for="option-xxl" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-xxl" name="color" {{$products->color == 'Beyaz' ? 'checked' : ''}}  value="Beyaz"></span> <span class="d-inline-block text-black">Beyaz</span>
+                            <label for="option-white" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-white" name="color" {{$products->color == 'Beyaz' ? 'checked' : ''}}  value="Beyaz"></span> <span class="d-inline-block text-black">Beyaz</span>
                             </label>
-                            <label for="option-xxl" class="d-flex mr-3 mb-3">
-                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-xxl" name="color" {{$products->color == 'Gri' ? 'checked' : ''}}  value="Gri"></span> <span class="d-inline-block text-black">Gri</span>
+                            <label for="option-gray" class="d-flex mr-3 mb-3">
+                                <span class="d-inline-block mr-2" style="top:-2px; position: relative;"><input type="radio" id="option-gray" name="color" {{$products->color == 'Gri' ? 'checked' : ''}}  value="Gri"></span> <span class="d-inline-block text-black">Gri</span>
                             </label>
                         </div>
                         <div class="mb-5">
@@ -100,3 +109,4 @@
     @endif
 
 @endsection
+
