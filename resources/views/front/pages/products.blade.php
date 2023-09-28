@@ -99,7 +99,7 @@
                         <ul class="list-unstyled mb-0">
                             @if(!empty($categories) && $categories->count() >0)
                                 @foreach($categories->where('cat_alt',null) as $cat)
-                                    <li class="mb-1"><a href="{{route($cat->slug.'ürün')}}" class="d-flex"><span>{{$cat->name}}</span> <span class="text-black ml-auto">({{$cat->items_count}})</span></a></li>
+                                    <li class="mb-1"><a href="{{route($cat->slug.'ürün')}}" class="d-flex"><span>{{$cat->name}}</span> <span class="text-black ml-auto">({{$cat->getTotalProductCount()}})</span></a></li>
                                 @endforeach
                             @endif
 

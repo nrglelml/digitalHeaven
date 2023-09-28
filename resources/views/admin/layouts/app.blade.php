@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title')</title>
+    <title>@yield('title') </title>
     <link rel="stylesheet" href="{{asset('assets/vendors/feather/feather.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendors/ti-icons/css/themify-icons.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendors/css/vendor.bundle.base.css')}}">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{asset('assets/css/vertical-layout-light/style.css')}}">
     <link rel="shortcut icon" href="{{asset('assets/images/favicon.png')}}" />
 </head>
-</head>
+
 <body>
 <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -289,8 +289,8 @@
         <!-- partial:partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
-                <li class="nav-item menu-items {{ Route::is('category-list') ? 'active' : '' }}">
-                    <a class="nav-link"  href="{{route('category-list')}}">
+                <li class="nav-item menu-items {{ Route::is('slider.index') ? 'active' : '' }}">
+                    <a class="nav-link"  href="{{route('slider.index')}}">
                          <span class="menu-icon">
                         <i class="icon-grid menu-icon"></i>
                          </span>

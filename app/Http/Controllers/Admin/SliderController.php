@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SliderRequest;
 use App\Models\Slider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+
+
 
 class SliderController extends Controller
 {
@@ -15,94 +20,100 @@ class SliderController extends Controller
         return view('admin.pages.slider.slider-list',compact('sliders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
-        return view('backend.pages.slider.edit');
+        return view('admin.pages.slider.slider-add');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(SLiderRequest $request)
+
+    public function store(SliderRequest $request)
     {
+        $dosyaadi='';
+        if ($request->hasFile('image')){
+            $resim=$request->file('image');
+            $dosyaadi= time().'-'.Str::slug($request->name);
+            $uzanti=$resim->getClientOriginalExtension();
+            $yukleKlasor='img/slider';
+            if ($uzanti=='pdf'||$uzanti=='svg'||$uzanti=='webp'){
+                $resim->move(public_path($yukleKlasor),$dosyaadi.'-'.$uzanti);
+            }
+            else{
+                $resim= Image::make($resim);
+                $resim->encode('webp',75)->save($yukleKlasor.$dosyaadi.'webp');
 
+            }
 
-
-        $slider =  Slider::create([
+        }
+        Slider::create([
             'name'=>$request->name,
             'link'=>$request->link,
-            'content'=>$request->content,
+            'description'=>$request->description,
             'status'=>$request->status,
+            'image'=>$dosyaadi ?? NULL,
+
         ]);
-
-        if ($request->hasFile('image')) {
-            $this->fileSave('Slider', 'slider', $request, $slider);
-        }
-
-
-        return back()->withSuccess('Başarıyla Oluşturuldu!');
+        return back()->withSuccess('Başarıyla Oluşturuldu');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
-        //
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(string $id)
     {
         $slider = Slider::where('id',$id)->with('images')->first();
-        return view('backend.pages.slider.edit',compact('slider'));
+        return view('admin.pages.slider.slider-add',compact('slider'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, string $id)
     {
+        $dosyaadi='';
+        if ($request->hasFile('image')){
+            $resim=$request->file('image');
+            $dosyaadi= time().'-'.Str::slug($request->name);
+            $uzanti=$resim->getClientOriginalExtension();
+            $yukleKlasor='img/slider';
+            if ($uzanti=='pdf'||$uzanti=='svg'||$uzanti=='webp'){
+                $resim->move(public_path($yukleKlasor),$dosyaadi.'-'.$uzanti);
+            }
+            else{
+                $resim= Image::make($resim);
+                $resim->encode('webp',75)->save($yukleKlasor.$dosyaadi.'webp');
 
-        $slider = Slider::where('id',$id)->firstOrFail();
+            }
 
-        $slider->update([
+        }
+        Slider::where('id',$id)->update([
             'name'=>$request->name,
             'link'=>$request->link,
-            'content'=>$request->description,
+            'description'=>$request->description,
             'status'=>$request->status,
+            'image'=>$dosyaadi ?? NULL,
+
         ]);
-
-
-        if ($request->hasFile('image')) {
-            $this->fileSave('Slider', 'slider', $request, $slider);
-        }
 
 
         return back()->withSuccess('Başarıyla Güncellendi!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Request $request)
     {
-
         $slider = Slider::where('id',$request->id)->firstOrFail();
 
-        $imageMedia = ImageMedia::where('model_name', 'Slider')->where('table_id', $slider->id)->first();
+       /* $imageMedia = ImageMedia::where('model_name', 'Slider')->where('table_id', $slider->id)->first();
 
         if (!empty($imageMedia->data)) {
             foreach ($imageMedia->data as $img) {
-                dosyasil($img['image']);
+                //dosyasil($img['image']);
             }
             $imageMedia->delete();
-        }
+        }*/
 
 
         $slider->delete();
@@ -111,11 +122,6 @@ class SliderController extends Controller
 
     public function status(Request $request) {
 
-        $update = $request->statu;
-        $updatecheck = $update == "false" ? '0' : '1';
-
-        Slider::where('id',$request->id)->update(['status'=> $updatecheck]);
-        return response(['error'=>false,'status'=>$update]);
     }
 }
 

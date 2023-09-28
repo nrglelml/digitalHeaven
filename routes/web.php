@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Front\PageHomeController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\Front\PageController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\AjaxController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomController;
 
 
 Route::middleware('sitesetting')->group(function (){
@@ -24,18 +26,13 @@ Route::middleware('sitesetting')->group(function (){
     Route::get('/cart',[CartController::class,'index'])->name('cart');
     Route::post('/cart/add',[CartController::class,'add'])->name('cart.add');
     Route::post('/cart/remove',[CartController::class,'remove'])->name('cart.remove');
+
+    Auth::routes();
+    Route::get('/logout',[AjaxController::class,'logout'])->name('logout');
 });
 
 
 
-Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

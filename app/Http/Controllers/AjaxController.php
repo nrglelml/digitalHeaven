@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Http\Requests\ContactFormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AjaxController extends Controller
 {
@@ -25,5 +26,9 @@ class AjaxController extends Controller
             return redirect()->back()->with('error', 'Mesaj gönderilirken bir hata oluştu: ' . $e->getMessage());
         }
 
+    }
+    public function logout(){
+        Auth::logout();
+        return redirect()->route('home');
     }
 }

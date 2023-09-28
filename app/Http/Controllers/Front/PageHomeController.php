@@ -13,7 +13,6 @@ class PageHomeController extends Controller
 {
     public function home(){
        $slider= Slider::where('status',1)->first();
-
         $about_us=AboutUs::where('id',1)->first();
        return view('front.pages.home',compact('slider','about_us'));
     }

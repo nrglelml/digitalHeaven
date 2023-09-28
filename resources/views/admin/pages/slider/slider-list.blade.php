@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
-
+@section('title')
+    Slider Panel
+@endsection
 @section('content')
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
@@ -7,7 +9,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Basic Table</h4>
                     <p class="card-description">
-                        <a href="" class="btn btn-primary">Yeni</a>
+                        <a href="{{route('slider.create')}}" class="btn btn-primary">Yeni</a>
                     </p>
 
                     @if (session()->get('success'))
@@ -55,16 +57,13 @@
 
                                         </td>
                                         <td class="d-flex">
-                                            <a href="" class="btn btn-primary mr-2">Düzenle</a>
+                                            <a href="{{route('slider.edit',$slider->id)}}" class="btn btn-primary mr-2">Düzenle</a>
 
-                                            {{-- <form action="{{route('panel.slider.destroy',$slider->id)}}" method="POST">
+                                             <form action="{{route('slider.destroy',$slider->id)}}" method="POST">
                                                  @csrf
                                                  @method('DELETE')
                                                  <button type="submit" class="btn btn-danger">Sil</button>
-                                             </form>  --}}
-
-
-                                            <button type="button" class="silBtn btn btn-danger">Sil</button>
+                                             </form>
                                         </td>
                                     </tr>
 
