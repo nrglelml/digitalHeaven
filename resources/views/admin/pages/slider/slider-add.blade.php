@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
-
+@section('title')
+    Slider Ekle
+@endsection
 @section('content')
     <div class="row">
         <div class="col-12 grid-margin stretch-card">
@@ -33,29 +35,6 @@
                     @endif
                     <form action="{{$routelink}}" class="forms-sample" method="POST" enctype="multipart/form-data">
                         @csrf
-                        {{-- @if (!empty($slider->id))
-                             @method('PUT')
-                         @endif
-
-
-                          <div class="col-lg-12 d-flex images">
-                             @if (isset($slider) && !empty($slider->images->data))
-                                 @php
-                                     $images = collect($slider->images->data ?? '');
-                                 @endphp
-                                 @foreach ($images->sortByDesc('vitrin') as $item)
-                                     <div class="item mx-4" data-id="{{$slider->id}}" data-model="Slider" data-image_no="{{$item['image_no']}}">
-                                         <img src="{{asset($item['image'])}}" class="img-thumbnail">
-                                         <button type="button" class="deleteImage btn btn-sm btn-danger btn btn-sm btn-danger d-flex align-items-center px-2 mt-3">X</button>
-                                         <div class="mt-4">
-                                             <label class="d-block">
-                                                 <input class="radio_animated vitrinBtn" type="radio" {{$item['vitrin'] == 1 ? 'checked' : ''}}  >Vitrin Yap
-                                             </label>
-                                         </div>
-                                     </div>
-                                 @endforeach
-                             @endif
-                         </div>--}}
                         <div class="form-group">
                             <div class="input-group col-xs-12">
                                 <img src="{{asset($slider->image ?? 'img/resimyok.webp')}}" alt="">

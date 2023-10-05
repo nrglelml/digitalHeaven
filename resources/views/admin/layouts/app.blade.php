@@ -13,6 +13,11 @@
     <link rel="stylesheet" type="text/css" href="{{asset('assets/js/select.dataTables.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/vertical-layout-light/style.css')}}">
     <link rel="shortcut icon" href="{{asset('assets/images/favicon.png')}}" />
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('assets/css/alertify.min.css')}}"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @yield('css')
+
 </head>
 
 <body>
@@ -297,13 +302,13 @@
                         <span class="menu-title">Slider</span>
                     </a>
                 </li>
-                <li class="nav-item menu-items {{ Route::is('category-list') ? 'active' : '' }}">
-                <a class="nav-link"  href="{{route('category-list')}}">
+                <li class="nav-item menu-items {{ Route::is('slider.index') ? 'active' : '' }}">
+                    <a class="nav-link"  href="{{route('slider.index')}}">
                          <span class="menu-icon">
                         <i class="icon-layout menu-icon"></i>
                          </span>
-                    <span class="menu-title">Kategori</span>
-                </a>
+                        <span class="menu-title">Kategori</span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
@@ -342,6 +347,7 @@
 <!-- container-scroller -->
 
 <!-- plugins:js -->
+
 <script src="{{asset('assets/vendors/js/vendor.bundle.base.js')}}"></script>
 
 <script src="{{asset('assets/vendors/chart.js/Chart.min.js')}}"></script>
@@ -357,6 +363,11 @@
 
 <script src="{{asset('assets/js/dashboard.js')}}"></script>
 <script src="{{asset('assets/js/Chart.roundedBarCharts.js')}}"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="{{asset('assets/js/alertify.min.js')}}"></script>
+
+
+@yield('js')
 
 </body>
 

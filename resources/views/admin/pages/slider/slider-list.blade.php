@@ -36,11 +36,7 @@
                                 @foreach ($sliders as $slider)
                                     <tr class="item" item-id="{{ $slider->id }}">
                                         <td class="py-1">
-
-                                            @php
-                                                $images = collect($slider->images->data ?? '');
-                                            @endphp
-                                            <img src="{{asset($images->sortByDesc('vitrin')->first()['image'] ?? 'img/resimyok.png')}}" ></img>
+                                            <img src="{{asset($slider->image)}}" alt="image">
 
                                         </td>
                                         <td>{{$slider->name}}</td>
@@ -57,13 +53,19 @@
 
                                         </td>
                                         <td class="d-flex">
-                                            <a href="{{route('slider.edit',$slider->id)}}" class="btn btn-primary mr-2">Düzenle</a>
+                                            <form action="{{route('slider.update',$slider->id)}}">
+                                                @csrf
+                                                @method('PUT')
+                                                <a href="{{route('slider.edit',$slider->id)}}" class="btn btn-primary mr-2">Düzenle</a>
+                                            </form>
 
-                                             <form action="{{route('slider.destroy',$slider->id)}}" method="POST">
-                                                 @csrf
-                                                 @method('DELETE')
-                                                 <button type="submit" class="btn btn-danger">Sil</button>
-                                             </form>
+
+                                            {{--  <form action="{{route('slider.destroy',$slider->id)}}" method="POST">
+                                                  @csrf
+                                                  @method('DELETE')
+                                                  <button type="submit" class="btn btn-danger">Sil</button>
+                                              </form>--}}
+                                            <button type="button" class="silBtn btn btn-danger">Sil</button>
                                         </td>
                                     </tr>
 
@@ -80,4 +82,64 @@
 
 
     </div>
+@endsection
+@section('js')
+    <script>
+        $(document).on('change','.durum',function (e){
+            id=$(this).closest('.item').attr('item-id');
+            statu=$(this).prop('checked');
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type:" POST",
+                url: "{{route('slider.status')}}",
+                data: {
+                    id:id,
+                    statu:statu
+                },
+                success:function (response){
+                    if (response.status == 'true'){
+                        alertify.success("Durum aktif olarak değiştirildi!")
+                    }
+                    else {
+                        alertify.error("Durum pasif olarak değiştirildi!")
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', '.silBtn', function(e) {
+            e.preventDefault();
+            var item = $(this).closest('.item');
+            id = item.attr('item-id');
+            alertify.confirm("Silmek İstediğine Emin Misin?","Silmek İstediğine Eminmisin?",
+                function(){
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type:"DELETE",
+                        url:"{{route('slider.destroy',$slider->id)}}",
+                        data:{
+                            id:id,
+                        },
+                        success: function (response) {
+                            if (response.error == false)
+                            {
+                                item.remove();
+                                alertify.success(response.message);
+                            }else {
+                                alertify.error("Bir Hata Oluştu");
+                            }
+                        }
+                    });
+                },
+                function(){
+                    alertify.error('Silme İptal Edildi');
+                });
+        });
+
+    </script>
 @endsection

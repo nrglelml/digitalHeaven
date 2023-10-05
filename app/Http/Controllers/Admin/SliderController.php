@@ -65,35 +65,32 @@ class SliderController extends Controller
 
     public function edit(string $id)
     {
-        $slider = Slider::where('id',$id)->with('images')->first();
+        $slider = Slider::where('id',$id)->with('images')->get();
         return view('admin.pages.slider.slider-add',compact('slider'));
     }
 
 
     public function update(Request $request, string $id)
     {
-        $dosyaadi='';
+        $slider = Slider::where('id',$id)->firstOrFail();
+
+        $filename='';
         if ($request->hasFile('image')){
-            $resim=$request->file('image');
-            $dosyaadi= time().'-'.Str::slug($request->name);
-            $uzanti=$resim->getClientOriginalExtension();
+            deleteFile($slider->image);
+
+            $image=$request->file('image');
+            $filename= $request->name;
             $yukleKlasor='img/slider';
-            if ($uzanti=='pdf'||$uzanti=='svg'||$uzanti=='webp'){
-                $resim->move(public_path($yukleKlasor),$dosyaadi.'-'.$uzanti);
-            }
-            else{
-                $resim= Image::make($resim);
-                $resim->encode('webp',75)->save($yukleKlasor.$dosyaadi.'webp');
-
-            }
-
+            $imageurl = addImage($image,$filename,$yukleKlasor);
         }
-        Slider::where('id',$id)->update([
+
+
+        $slider->update([
             'name'=>$request->name,
             'link'=>$request->link,
             'description'=>$request->description,
             'status'=>$request->status,
-            'image'=>$dosyaadi ?? NULL,
+            'image'=>$imageurl ?? NULL,
 
         ]);
 
@@ -106,22 +103,24 @@ class SliderController extends Controller
     {
         $slider = Slider::where('id',$request->id)->firstOrFail();
 
-       /* $imageMedia = ImageMedia::where('model_name', 'Slider')->where('table_id', $slider->id)->first();
+        /* $imageMedia = ImageMedia::where('model_name', 'Slider')->where('table_id', $slider->id)->first();
 
-        if (!empty($imageMedia->data)) {
-            foreach ($imageMedia->data as $img) {
-                //dosyasil($img['image']);
-            }
-            $imageMedia->delete();
-        }*/
-
-
+         if (!empty($imageMedia->data)) {
+             foreach ($imageMedia->data as $img) {
+                 //dosyasil($img['image']);
+             }
+             $imageMedia->delete();
+         }*/
+        deleteFile($slider->image);
         $slider->delete();
         return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
     }
 
     public function status(Request $request) {
-
+        $update= $request->statu;
+        $updateCheck= $update == true ? '1' : '0';
+        Slider::where('id',$request->id)->update('status',$request->$updateCheck);
+        return response(['error'=>false,'status'=>$update]);
     }
 }
 
