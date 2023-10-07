@@ -27,6 +27,7 @@ Route::middleware('sitesetting')->group(function (){
     Route::post('/cart/add',[CartController::class,'add'])->name('cart.add');
     Route::post('/cart/remove',[CartController::class,'remove'])->name('cart.remove');
 
+    Route::post('/coupon',[CartController::class,'couponCheck'])->name('coupon.check');
     Auth::routes();
     Route::get('/logout',[AjaxController::class,'logout'])->name('logout');
 });
