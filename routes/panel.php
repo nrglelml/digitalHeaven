@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware'=>['panelsetting','auth'] , 'prefix'=>'admin' ],function (){
@@ -31,6 +32,14 @@ Route::group(['middleware'=>['panelsetting','auth'] , 'prefix'=>'admin' ],functi
     Route::resource('contact', ContactController::class);
     Route::get('/contact-status',[ContactController::class,'status'])->name('contact.status');
 
+    Route::prefix('setting')->group(function (){
+        Route::get('/',[SiteSettingController::class,'index'])->name('setting.index');
+        Route::match(['GET','POST'],'/create',[SiteSettingController::class,'create'])->name('setting.create');
+        Route::post('/store',[SiteSettingController::class,'store'])->name('setting.store');
+        Route::get('/edit',[SiteSettingController::class,'edit'])->name('setting.edit');
+        Route::put('/update/{id}',[SiteSettingController::class,'update'])->name('setting.update');
+        Route::get('/destroy/{id}',[SiteSettingController::class,'destroy'])->name('setting.destroy');
+    });
 
 
 });

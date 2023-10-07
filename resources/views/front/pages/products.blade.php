@@ -25,14 +25,13 @@
 
                                 </div>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="dropdownMenuReference" data-toggle="dropdown">Sıralama</button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
-                                        <a class="dropdown-item" href="#" data-order="a_z_order">A - Z ye doğru sırala</a>
-                                        <a class="dropdown-item" href="#" data-order="z_a_order">Z - A ya doğru sırala</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#" data-order="price_min_order">Düşük fiyata göre sırala</a>
-                                        <a class="dropdown-item" href="#" data-order="price_max_order">Yüksek fiyata göre sırala</a>
-                                    </div>
+                                    <select class="form-control" id="orderList">
+                                        <option class="dropdown-item" value="">Sıralama Seçiniz</option>
+                                        <option class="dropdown-item" value="id-asc">A-Z ye Sırala</option>
+                                        <option class="dropdown-item" value="id-desc">Z-A ye Sırala</option>
+                                        <option class="dropdown-item" value="price-asc">Düşük Fiyata göre sırala</option>
+                                        <option class="dropdown-item" value="price-desc">Yüksek Fiyata göre sırala</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -47,36 +46,10 @@
                             <div class="alert alert-danger">{{session()->get('error')}}</div>
                         @endif
                     </div>
-                    <div class="row mb-5">
-                        @if(!empty($products) && $products->count() > 0)
-                            @foreach($products as $product)
-                                <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up">
-                                    <div class="block-4 text-center border">
-                                        <figure class="block-4-image">
-                                            <a href="{{route('products_detail',['slug' => $product->slug])}}"><img src="{{asset($product->image)}}" alt="{{$product->short_text}}" class="img-fluid"></a>
-                                        </figure>
-                                        <div class="block-4-text p-4">
-                                            <h3><a href="{{route('products_detail',['slug' => $product->slug])}}">{{$product->name}}</a></h3>
-                                            <p class="mb-0">{!! $product->description !!}</p>
-                                            <p class="text-primary font-weight-bold">{{number_format($product->price),2}}</p>
-                                            <form action="{{route('cart.add')}}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                <input type="hidden" name="color" value="{{$product->color}}">
-                                                <button type="submit" class="buy-now btn btn-sm btn-primary">Sepete Ekle</button>
-
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            @endforeach
-
-                        @endif
-
-
+                    <div class="row mb-5 productContent">
+                        @include('front.pages.products-ajax')
                     </div>
-                    <div class="row" data-aos="fade-up">
+                    <div class="row paginateButtons" data-aos="fade-up">
                         {{ $products->withQueryString()->links('vendor.pagination.bootstrap-4') }}
                        <div class="col-md-12 text-center">
                            {{-- <div class="site-block-27">
@@ -111,10 +84,9 @@
                             <h3 class="mb-3 h6 text-uppercase text-black d-block">Fiyata Göre Sırala</h3>
                             <div id="slider-range" class="border-primary"></div>
                             <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white" disabled="" />
-
+                            <input type="text" name="text" id="priceBetween" class="form-control border-0 pl-0 bg-white" >
 
                             <input type="text" name="text" id="priceBetween" class="form-control" hidden />
-
                         </div>
 
 
@@ -174,9 +146,12 @@
 @endsection
 @section('customjs')
     <script>
-        var maxprice="{{$maxprice}}";
-        var defaultminprice="{{request()->min ?? 0}}";
-        var defaultmaxprice="{{request()->max ?? $maxprice}}";
+        var maxprice = "{{$maxprice}}";
+
+        var defaultminprice = "{{request()->min ?? 0}}";
+        var defaultmaxprice = "{{request()->max ?? $maxprice}}";
+
+
         var url = new URL(window.location.href);
 
         $(document).on('click', '.filterBtn', function(e) {
@@ -186,18 +161,13 @@
 
         function filtrele() {
             let colorList  = $(".colorList:checked" ).map((_,chk) => chk.value).get()
-            let sizeList = $(".sizeList:checked").map((_,chk) => chk.value).get()
+
             if (colorList.length  > 0) {
                 url.searchParams.set("color",  colorList.join(","))
             }else {
                 url.searchParams.delete('color');
             }
 
-            if (sizeList.length  > 0) {
-                url.searchParams.set("size", sizeList.join(","))
-            }else {
-                url.searchParams.delete('size');
-            }
 
 
             var price = $('#priceBetween').val().split('-');
@@ -225,5 +195,44 @@
 
 
         }
+
+
+        $(document).on('change', '#orderList', function(e) {
+
+
+            var order = $(this).val();
+
+            if(order != '') {
+                orderby = order.split('-');
+                url.searchParams.set("order", orderby[0])
+                url.searchParams.set("sort", orderby[1])
+            }else {
+                url.searchParams.delete('order');
+                url.searchParams.delete('sort');
+            }
+
+            filtrele();
+
+        });
+
+
+        $(document).on('submit', '#addForm', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type:"POST",
+                url:"{{route('home')}}",
+                data:formData,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('.count').text(response.sepetCount);
+                }
+            });
+
+        });
+
     </script>
 @endsection

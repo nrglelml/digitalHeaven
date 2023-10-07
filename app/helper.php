@@ -11,7 +11,13 @@ if (!function_exists('deleteFile')){
         }
     }
 }
-
+if (!function_exists('openFile')) {
+    function openFile($filepath, $permissions = 0777) {
+        if (!file_exists($filepath)) {
+            mkdir($filepath, $permissions, true);
+        }
+    }
+}
 if (!function_exists('addImage')) {
     function addImage($image,$name,$path) {
         $extension = $image->getClientOriginalExtension();

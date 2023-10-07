@@ -26,6 +26,11 @@ class PageController extends Controller
                 }
                 if (!empty($start_price && $end_price)){
                     $q->whereBetween('price',[$start_price ,$end_price]);
+
+                   /* $q->where('price','>=', $start_price);
+
+                    $q->where('price','<=', $end_price);*/
+
                 }
                 return $q;
             })->with('category:id,name,slug')
@@ -37,10 +42,11 @@ class PageController extends Controller
                     $q->where('category',$category);
                 }*/
                 return $q;
-            });
-
-
-        $products= $products->orderBy($order,$sort)->paginate(21);
+            })->orderBy($order,$sort)->paginate(21);
+        if ($request->ajax()){
+            $view= view('front.pages.products-ajax',compact('products'))->render();
+            return response(['data'=>$view, 'paginate'=>(string) $products->withQueryString()->links('vendor.pagination.bootstrap-4') ]);
+        }
 
         $colors= Product::where('status',1)->groupBy('color')->pluck('color')->toArray();
 
