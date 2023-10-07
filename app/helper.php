@@ -1,5 +1,7 @@
 <?php
 
+use Intervention\Image\Facades\Image;
+
 if (!function_exists('deleteFile')){
     function deleteFile($string){
         if (file_exists($string)){
@@ -23,5 +25,16 @@ if (!function_exists('addImage')) {
             $imageurl = $path.$filename.'.webp';
         }
         return  $imageurl;
+    }
+}
+
+if (!function_exists('strLimit')) {
+    function strLimit($text, $limit, $url = null) {
+        if ($url == null) {
+            $end = '...';
+        } else {
+            $end = '<a class="ml-2" href="' . $url . '">[...]</a>';
+        }
+        return Str::limit($text, $limit, $end);
     }
 }

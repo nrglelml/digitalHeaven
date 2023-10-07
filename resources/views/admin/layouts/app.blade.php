@@ -294,22 +294,59 @@
         <!-- partial:partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
-                <li class="nav-item menu-items {{ Route::is('slider.index') ? 'active' : '' }}">
-                    <a class="nav-link"  href="{{route('slider.index')}}">
-                         <span class="menu-icon">
-                        <i class="icon-grid menu-icon"></i>
-                         </span>
+                <li class="nav-item menu-items ">
+                    <a class="nav-link" data-toggle="collapse" href="#sliderMenu" aria-expanded="false" aria-controls="sliderMenu">
+        <span class="menu-icon">
+            <i class="icon-grid menu-icon"></i>
+        </span>
                         <span class="menu-title">Slider</span>
+                        <i class="menu-arrow"></i>
                     </a>
+                    <div class="collapse" id="sliderMenu">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('slider.index') ? 'active' : '' }}" href="{{ route('slider.index') }}">Sliders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('slider.create') ? 'active' : '' }}" href="{{ route('slider.create') }}">Slider Ekle</a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
-                <li class="nav-item menu-items {{ Route::is('slider.index') ? 'active' : '' }}">
-                    <a class="nav-link"  href="{{route('slider.index')}}">
-                         <span class="menu-icon">
-                        <i class="icon-layout menu-icon"></i>
-                         </span>
+
+                <li class="nav-item menu-items ">
+                    <a class="nav-link" data-toggle="collapse" href="#categoryMenu" aria-expanded="false" aria-controls="categoryMenu">
+        <span class="menu-icon">
+            <i class="icon-layout menu-icon"></i>
+        </span>
                         <span class="menu-title">Kategori</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="categoryMenu">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('category.index') ? 'active' : '' }}" href="{{ route('category.index') }}">Kategoriler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('category.create') ? 'active' : '' }}" href="{{ route('category.create') }}">Kategori Ekle</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"  href="{{route('about.index')}}" >
+                        <i class="icon-bar-graph menu-icon"></i>
+                        <span class="menu-title"> Hakkımızda</span>
+
+                    </a>
+                <li class="nav-item {{ Route::is('contact.index') ? 'active' : '' }}" >
+                    <a class="nav-link" href="{{route('contact.index')}}">
+                        <i class="icon-head menu-icon"></i>
+                        <span class="menu-title">Gelen Kutusu</span>
                     </a>
                 </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
                         <i class="icon-grid-2 menu-icon"></i>

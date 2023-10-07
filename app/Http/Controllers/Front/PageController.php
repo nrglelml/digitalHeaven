@@ -12,17 +12,17 @@ class PageController extends Controller
 {
     public function products(Request $request, $slug=null){
         $category= request()->segment(1);
-        $color =$request->color ?? null;
-        $start_price =$request->start_price  ?? null;
-        $end_price =$request->end_price  ?? null;
+        $colors = !empty($request->color) ? explode(',',$request->color) : null;
+        $start_price =$request->min  ?? null;
+        $end_price =$request->max  ?? null;
 
         $order=$request->order ?? 'id';
         $sort=$request->sort ?? 'desc';
 
         $products =Product::where('status',1)->select(['id','name','slug','color','price','category_id','image'])
-            ->where(function ($q) use($color,$start_price ,$end_price){
-                if (!empty($color)){
-                    $q->where('color',$color);
+            ->where(function ($q) use($colors,$start_price ,$end_price){
+                if (!empty($colors)){
+                    $q->whereIn('color',$colors);
                 }
                 if (!empty($start_price && $end_price)){
                     $q->whereBetween('price',[$start_price ,$end_price]);
@@ -41,13 +41,11 @@ class PageController extends Controller
 
 
         $products= $products->orderBy($order,$sort)->paginate(21);
-        $minprice= $products->min('price');
-        $maxprice= $products->max('price');
+
         $colors= Product::where('status',1)->groupBy('color')->pluck('color')->toArray();
 
-
-
-        return view('front.pages.products', compact('products','minprice','maxprice','colors'));
+        $maxprice= Product::max('price');
+        return view('front.pages.products', compact('products','maxprice','colors'));
     }
 
     public function products_detail($slug){

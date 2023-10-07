@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Kategoriler</h4>
-                        <a  href="{{route('category-add')}}">
+                        <a  href="{{route('category.create')}}">
                         <p class="card-description">
                             Kategori Ekle
                         </p>
@@ -19,42 +19,46 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Düzenle</th>
-                                    <th>Sil</th>
+                                    <th>Resim</th>
                                     <th>Alt Kategori</th>
                                     <th>Slug</th>
                                     <th>Kategori Adı</th>
                                     <th>Durum</th>
+                                    <th>Edit</th>
                                     <th>Eklenme Tarihi</th>
                                     <th>Güncellenme Tarihi</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($category as $cat)
+                                @foreach($categories as $category)
                                 <tr>
 
-                                    <td>{{$cat->id}}</td>
-                                        <td>
-                                            <a data-id="{{$cat->id}}" class="btn btn-warning edit" href="" >Düzenle<i class="fa fa-edit"></i> </a>
-                                        </td>
-                                        <td>
-                                            <!--<button data-id="{{$cat->id}}" class="btn btn-danger deleteRecord">Sil</button>-->
-                                            <a data-id="{{$cat->id}}" href=""  class="btn btn-danger deleteRecord">Sil<i class="fa fa-trash" aria-hidden="true"></i> </a>
-                                        </td>
-                                    <td>{{$cat->cat_alt}}</td>
-                                    <td>
-                                        {{$cat->slug}}
+                                    <td>{{$category->id}}</td>
+                                    <td class="py-1">
+                                        <img src="{{asset($category->image)}}" alt="image">
+
                                     </td>
-                                        <td>{{$cat->name}}</td>
-                                        <td>
-                                            @if($cat->status)
-                                                <a data-id="{{$cat->id}}" href="" class="btn btn-success changeStatus">Aktif </a>
-                                            @else
-                                                <a data-id="{{$cat->id}}" href="" class="btn btn-danger changeStatus">Pasif</a>
-                                            @endif
-                                        </td>
-                                        <td>{{\Carbon\Carbon::parse($cat->created_at)->format("d-m-Y H:i:s")}}</td>
-                                        <td>{{\Carbon\Carbon::parse($cat->updated_at)->format("d-m-Y H:i:s")}}</td>
+
+                                    <td>{{$category->cat_alt}}</td>
+                                    <td>{{$category->slug}}</td>
+                                    <td>{{$category->name}}</td>
+                                    <td>{{$category->description}}</td>
+                                    <td>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="durum" data-on="Aktif" value="1" data-off="Pasif" data-onstyle="success" data-offstyle="danger" {{ $category->status == '1' ? 'checked' : '' }}  data-toggle="toggle">
+                                            </label>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <a href="{{route('category.edit',[$category->id])}}" class="btn btn-primary mr-2">Düzenle</a>
+
+                                        <!--<button data-id="{{$category->id}}" class="btn btn-danger deleteRecord">Sil</button>-->
+                                        <a data-id="{{$category->id}}" href=""  class="btn btn-danger silBtn">Sil </a>
+                                    </td>
+                                        <td>{{\Carbon\Carbon::parse($category->created_at)->format("d-m-Y H:i:s")}}</td>
+                                        <td>{{\Carbon\Carbon::parse($category->updated_at)->format("d-m-Y H:i:s")}}</td>
 
                                 </tr>
                                 @endforeach
@@ -67,3 +71,60 @@
         </div>
     </div>
 @endsection
+<script>
+
+   $(document).on('change','.durum',function (e){
+        id=$(this).closest('.item').attr('item-id');
+        statu=$(this).prop('checked');
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type:" POST",
+            url: "{{route('category.status')}}",
+            data: {
+                id:id,
+                statu:statu
+            },
+            success:function (response){
+                if (response.status == 'true'){
+                    alertify.success("Durum aktif olarak değiştirildi!")
+                }
+                else {
+                    alertify.error("Durum pasif olarak değiştirildi!")
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.silBtn', function(e) {
+        e.preventDefault();
+        var item = $(this).closest('.item');
+        id = item.attr('data-id');
+        alertify.confirm("Silmek İstediğine Emin Misin?", "Silmek İstediğine Eminmisin?",
+            function() {
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: "DELETE",
+                    url: $(this).attr('href'),
+                    data: {
+                        id: id,
+                    },
+                    success: function(response) {
+                        if (response.error == false) {
+                            item.remove();
+                            alertify.success(response.message);
+                        } else {
+                            alertify.error("Bir Hata Oluştu");
+                        }
+                    }
+                });
+            },
+            function() {
+                alertify.error('Silme İptal Edildi');
+            });
+    });
+
+</script>

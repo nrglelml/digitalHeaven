@@ -25,7 +25,7 @@
 
                     @if (!empty($slider->id))
                         @php
-                            $routelink = route('slider.update',$slider->id);
+                            $routelink = route('slider.update',[$slider->id]);
 
                         @endphp
                     @else
@@ -35,6 +35,9 @@
                     @endif
                     <form action="{{$routelink}}" class="forms-sample" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @if(!empty($slider->id))
+                            @method('PUT')
+                        @endif
                         <div class="form-group">
                             <div class="input-group col-xs-12">
                                 <img src="{{asset($slider->image ?? 'img/resimyok.webp')}}" alt="">
@@ -42,15 +45,16 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Resim</label>
-                            <input type="file" name="image" class="file-upload-default">
+                            <label for="image">Resim</label>
+                            <input type="file" name="image" class="file-upload-default" style="display: none;">
                             <div class="input-group col-xs-12">
                                 <input type="text" class="form-control file-upload-info" disabled placeholder="Resim Yükle">
                                 <span class="input-group-append">
-                            <button class="file-upload-browse btn btn-primary" type="button">Yükle</button>
-                          </span>
+            <button class="file-upload-browse btn btn-primary" type="button" onclick="document.querySelector('input[name=image]').click();">Yükle</button>
+        </span>
                             </div>
                         </div>
+
 
                         <div class="form-group">
                             <label for="name">Başlık</label>

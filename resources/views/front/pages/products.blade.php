@@ -121,15 +121,18 @@
 
                         <div class="mb-4">
                             <h3 class="mb-3 h6 text-uppercase text-black d-block">Renk</h3>
-                            @if(!empty($colors))
-                                @foreach($colors as $color)
-                                    <a href="#" class="d-flex color-item align-items-center" >
-                                        <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">{{$color}}</span>
-                                    </a>
+                            @if (!empty($colors))
+                                @foreach ($colors as $key => $color)
+                                    <label for="color{{$key}}" class="d-flex">
+                                        <input type="checkbox" value="{{$color}}" id="color{{$key}}" {{isset(request()->color) && in_array($color,explode(',',request()->color)) ? 'checked' : '' }}  class="mr-2 mt-1 colorList"> <span class="text-black">{{$color}}</span>
+                                    </label>
                                 @endforeach
                             @endif
 
 
+                        </div>
+                        <div class="mb-4">
+                            <button class="btn btn-block btn-primary filterBtn">Filtrele</button>
                         </div>
 
 
@@ -171,7 +174,56 @@
 @endsection
 @section('customjs')
     <script>
-        var minprice="{{$minprice}}";
         var maxprice="{{$maxprice}}";
+        var defaultminprice="{{request()->min ?? 0}}";
+        var defaultmaxprice="{{request()->max ?? $maxprice}}";
+        var url = new URL(window.location.href);
+
+        $(document).on('click', '.filterBtn', function(e) {
+            filtrele();
+        });
+
+
+        function filtrele() {
+            let colorList  = $(".colorList:checked" ).map((_,chk) => chk.value).get()
+            let sizeList = $(".sizeList:checked").map((_,chk) => chk.value).get()
+            if (colorList.length  > 0) {
+                url.searchParams.set("color",  colorList.join(","))
+            }else {
+                url.searchParams.delete('color');
+            }
+
+            if (sizeList.length  > 0) {
+                url.searchParams.set("size", sizeList.join(","))
+            }else {
+                url.searchParams.delete('size');
+            }
+
+
+            var price = $('#priceBetween').val().split('-');
+            url.searchParams.set("min", price[0])
+
+            url.searchParams.set("max", price[1])
+
+            newUrl = url.href;
+            window.history.pushState({}, '', newUrl);
+            // location.reload();
+
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type:"GET",
+                url:newUrl,
+                success: function (response) {
+
+                    $('.productContent').html(response.data);
+                    $('.paginateButtons').html(response.paginate)
+                }
+            });
+
+
+        }
     </script>
 @endsection

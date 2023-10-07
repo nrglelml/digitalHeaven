@@ -13,6 +13,8 @@ use Intervention\Image\Facades\Image;
 
 class SliderController extends Controller
 {
+    protected $model = Slider::class;
+
     public function index()
     {
         $sliders = Slider::all();
@@ -29,18 +31,18 @@ class SliderController extends Controller
 
     public function store(SliderRequest $request)
     {
-        $dosyaadi='';
+        $filename='';
         if ($request->hasFile('image')){
-            $resim=$request->file('image');
-            $dosyaadi= time().'-'.Str::slug($request->name);
-            $uzanti=$resim->getClientOriginalExtension();
+            $image=$request->file('image');
+            $filename= time().'-'.Str::slug($request->name);
+            $extension=$image->getClientOriginalExtension();
             $yukleKlasor='img/slider';
-            if ($uzanti=='pdf'||$uzanti=='svg'||$uzanti=='webp'){
-                $resim->move(public_path($yukleKlasor),$dosyaadi.'-'.$uzanti);
+            if ($extension=='pdf'||$extension=='svg'||$extension=='webp'){
+                $image->move(public_path($yukleKlasor),$filename.'-'.$extension);
             }
             else{
-                $resim= Image::make($resim);
-                $resim->encode('webp',75)->save($yukleKlasor.$dosyaadi.'webp');
+                $resim= Image::make($image);
+                $resim->encode('webp',75)->save($yukleKlasor.$filename.'webp');
 
             }
 
@@ -65,7 +67,7 @@ class SliderController extends Controller
 
     public function edit(string $id)
     {
-        $slider = Slider::where('id',$id)->with('images')->get();
+        $slider = Slider::where('id',$id)->first();
         return view('admin.pages.slider.slider-add',compact('slider'));
     }
 
@@ -73,6 +75,7 @@ class SliderController extends Controller
     public function update(Request $request, string $id)
     {
         $slider = Slider::where('id',$id)->firstOrFail();
+        $imageurl = $slider->image;
 
         $filename='';
         if ($request->hasFile('image')){
@@ -80,7 +83,7 @@ class SliderController extends Controller
 
             $image=$request->file('image');
             $filename= $request->name;
-            $yukleKlasor='img/slider';
+            $yukleKlasor = public_path('img/slider');
             $imageurl = addImage($image,$filename,$yukleKlasor);
         }
 
@@ -90,7 +93,7 @@ class SliderController extends Controller
             'link'=>$request->link,
             'description'=>$request->description,
             'status'=>$request->status,
-            'image'=>$imageurl ?? NULL,
+            'image'=>$imageurl ,
 
         ]);
 
@@ -101,16 +104,9 @@ class SliderController extends Controller
 
     public function destroy(Request $request)
     {
-        $slider = Slider::where('id',$request->id)->firstOrFail();
-
-        /* $imageMedia = ImageMedia::where('model_name', 'Slider')->where('table_id', $slider->id)->first();
-
-         if (!empty($imageMedia->data)) {
-             foreach ($imageMedia->data as $img) {
-                 //dosyasil($img['image']);
-             }
-             $imageMedia->delete();
-         }*/
+        $id=$request->id;
+        $slider = Slider::find($id);
+        //$slider = Slider::where('id',$request->id)->firstOrFail();
         deleteFile($slider->image);
         $slider->delete();
         return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
@@ -118,8 +114,8 @@ class SliderController extends Controller
 
     public function status(Request $request) {
         $update= $request->statu;
-        $updateCheck= $update == true ? '1' : '0';
-        Slider::where('id',$request->id)->update('status',$request->$updateCheck);
+        $updateCheck= $update == false ? '0' : '1';
+        Slider::where('id',$request->id)->update(['status'=>$updateCheck]);
         return response(['error'=>false,'status'=>$update]);
     }
 }
