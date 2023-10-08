@@ -333,6 +333,25 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item menu-items ">
+                    <a class="nav-link" data-toggle="collapse" href="#productsMenu" aria-expanded="false" aria-controls="productsMenu">
+        <span class="menu-icon">
+            <i class="icon-layout menu-icon"></i>
+        </span>
+                        <span class="menu-title">Ürünler</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="productsMenu">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('product.index') ? 'active' : '' }}" href="{{ route('product.index') }}">Ürünler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Route::is('product.create') ? 'active' : '' }}" href="{{ route('product.create') }}">Ürün Ekle</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link"  href="{{route('about.index')}}" >
                         <i class="icon-bar-graph menu-icon"></i>

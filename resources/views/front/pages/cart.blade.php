@@ -75,7 +75,6 @@
                         @endif
                     </table>
                 </div>
-                </form>
             </div>
 
             <div class="row">

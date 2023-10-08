@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,9 @@ Route::group(['middleware'=>['panelsetting','auth'] , 'prefix'=>'admin' ],functi
 */
     Route::resource('category', CategoryController::class);
     Route::get('/category-status',[CategoryController::class,'status'])->name('category.status');
+
+    Route::resource('product', ProductController::class);
+    Route::get('/product-status/{id}',[ProductController::class,'status'])->name('product.status');
 
     Route::prefix('about')->group(function (){
        Route::get('/',[AboutController::class,'index'])->name('about.index');
