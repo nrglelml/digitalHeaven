@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SliderRequest;
 use App\Models\Slider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
@@ -31,30 +32,33 @@ class SliderController extends Controller
 
     public function store(SliderRequest $request)
     {
-        $filename='';
-        if ($request->hasFile('image')){
-            $image=$request->file('image');
-            $filename= time().'-'.Str::slug($request->name);
-            $extension=$image->getClientOriginalExtension();
-            $yukleKlasor='img/slider';
-            if ($extension=='pdf'||$extension=='svg'||$extension=='webp'){
-                $image->move(public_path($yukleKlasor),$filename.'-'.$extension);
-            }
-            else{
-                $resim= Image::make($image);
-                $resim->encode('webp',75)->save($yukleKlasor.$filename.'webp');
-
-            }
-
+        $this->validate($request,
+            ['image' => 'mimes:jpeg,jpg,png',],
+            ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
+        $status = 0;
+        if (isset($request->status)){
+            $status = 1;
         }
-        Slider::create([
+        $slider = Slider::create([
             'name'=>$request->name,
             'link'=>$request->link,
             'description'=>$request->description,
-            'status'=>$request->status,
+            'status'=>$status,
             'image'=>$dosyaadi ?? NULL,
 
         ]);
+        if ($request->hasFile('image')){
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $fileOriginalName = $file->getClientOriginalName();
+            $explode = explode('.', $fileOriginalName);
+            $fileOriginalName = Str::slug($explode[0], '-') . '_' . now()->format('d-m-Y_H-i-s') . '.' . $extension;
+
+            Storage::putFileAs('public/products', $file, $fileOriginalName);
+            $slider->image = 'products/' . $fileOriginalName;
+
+        }
+
         return back()->withSuccess('Başarıyla Oluşturuldu');
     }
 
@@ -74,17 +78,26 @@ class SliderController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $status = 0;
+        if (isset($request->status)){
+            $status = 1;
+        }
         $slider = Slider::where('id',$id)->firstOrFail();
-        $imageurl = $slider->image;
 
-        $filename='';
+        $this->validate($request,
+            ['image' => 'mimes:jpeg,jpg,png',],
+            ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
         if ($request->hasFile('image')){
             deleteFile($slider->image);
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $fileOriginalName = $file->getClientOriginalName();
+            $explode = explode('.', $fileOriginalName);
+            $fileOriginalName = Str::slug($explode[0], '-') . '_' . now()->format('d-m-Y_H-i-s') . '.' . $extension;
 
-            $image=$request->file('image');
-            $filename= $request->name;
-            $yukleKlasor = public_path('img/slider');
-            $imageurl = addImage($image,$filename,$yukleKlasor);
+            Storage::putFileAs('public/slider', $file, $fileOriginalName);
+            $slider->image = 'slider/' . $fileOriginalName;
+
         }
 
 
@@ -92,8 +105,8 @@ class SliderController extends Controller
             'name'=>$request->name,
             'link'=>$request->link,
             'description'=>$request->description,
-            'status'=>$request->status,
-            'image'=>$imageurl ,
+            'status'=>$status,
+            'image'=>$slider->image ?? $request->image,
 
         ]);
 
@@ -112,11 +125,18 @@ class SliderController extends Controller
         return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
     }
 
-    public function status(Request $request) {
-        $update= $request->statu;
-        $updateCheck= $update == false ? '0' : '1';
-        Slider::where('id',$request->id)->update(['status'=>$updateCheck]);
-        return response(['error'=>false,'status'=>$update]);
+    public function status($id) {
+        $item = Slider::find($id);
+
+        if (!$item) {
+            return abort(404);
+        }
+
+        $item->update(['status' => !$item->status]);
+        return redirect()->route('slider.index')->with([
+            'success' => true,
+            'error' => false,
+        ]);
     }
 }
 

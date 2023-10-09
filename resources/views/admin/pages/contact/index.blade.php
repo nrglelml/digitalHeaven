@@ -40,14 +40,11 @@
                                         <td>{!! strLimit($contact->message,50,route('contact.edit',[$contact->id])) !!}</td>
                                         <td>{{$contact->ip}}</td>
                                         <td>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" class="durum" data-on="Aktif" value="1" data-off="Pasif" data-onstyle="success" data-offstyle="danger" {{ $contact->status == '1' ? 'checked' : '' }}  data-toggle="toggle">
-                                                </label>
-                                            </div>
-
-
-
+                                            @if($contact->status)
+                                                <a data-id="{{$contact->id}}" href="{{route('contact.status',  ['id' => $contact->id])}}" class="btn btn-success durum">Aktif </a>
+                                            @else
+                                                <a data-id="{{$contact->id}}" href="{{route('contact.status',  ['id' => $contact->id])}}" class="btn btn-danger durum">Pasif</a>
+                                            @endif
                                         </td>
                                         <td class="d-flex">
                                             <a href="{{route('contact.edit',[$contact->id])}}" class="btn btn-primary mr-2">Düzenle</a>
@@ -95,7 +92,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type:" POST",
-                url: "{{route('contact.status')}}",
+                url: "{{route('contact.status',  ['id' => $contact->id])}}",
                 data: {
                     id:id,
                     statu:statu

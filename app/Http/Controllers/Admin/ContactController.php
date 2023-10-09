@@ -56,10 +56,17 @@ class ContactController extends Controller
         return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
     }
 
-    public function status(Request $request) {
-        $update= $request->statu;
-        $updateCheck= $update == false ? '0' : '1';
-        Contact::where('id',$request->id)->update(['status'=>$updateCheck]);
-        return response(['error'=>false,'status'=>$update]);
+    public function status($id) {
+        $item = Contact::find($id);
+
+        if (!$item) {
+            return abort(404);
+        }
+
+        $item->update(['status' => !$item->status]);
+        return redirect()->route('contact.index')->with([
+            'success' => true,
+            'error' => false,
+        ]);
     }
 }

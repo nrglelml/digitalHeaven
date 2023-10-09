@@ -72,9 +72,15 @@
 
                         <div class="form-group">
                             <label for="durum">Durum</label>
-                            @php
-                                $status =  $slider->status ?? '1';
-                            @endphp
+                            <?php
+                            if ($slider){
+                                $status=$slider->status ? "checked" : '';
+                            }
+                            else{
+                                $status = 0;
+                            }
+
+                            ?>
                             <select name="status" id="status" class="form-control">
                                 <option value="0" {{$status == '0' ? 'selected' : ''}}>Pasif</option>
                                 <option value="1" {{$status == '1' ? 'selected' : ''}}>Aktif</option>

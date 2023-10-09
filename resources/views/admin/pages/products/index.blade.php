@@ -27,6 +27,7 @@
                                     <th>Bilgiler</th>
                                     <th>Durum</th>
                                     <th>Edit</th>
+                                    <th>Delete</th>
 
                                 </tr>
                                 </thead>
@@ -36,8 +37,11 @@
 
                                     <td>{{$product->id}}</td>
                                     <td class="py-1">
-                                        <img src="{{asset($product->image)}}" alt="image">
-
+                                        @if ($product->image)
+                                            <img src="{{ asset($product->image) }}" alt="image">
+                                        @else
+                                            <img src="{{ asset('storage/products/default-image.jpg') }}" alt="default image">
+                                        @endif
                                     </td>
 
                                     <td>{{$product->name}}</td>
@@ -57,8 +61,10 @@
                                     </td>
 
                                     <td>
-                                        <a data-id="{{$product->id}}" class="btn btn-warning edit" href="{{route('product.edit' , [$product->id])}}" >Düzenle<i class="fa fa-edit"></i> </a>
-                                        <a data-id="{{$product->id}}" href="{{route('product.destroy' ,  [ $product->id])}}"  class="btn btn-danger silBtn">Sil<i class="fa fa-trash" aria-hidden="true"></i> </a>
+                                        <a data-id="{{$product->id}}" class="btn btn-warning edit" href="{{route('product.edit' , [$product->id])}}" >Düzenle </a>
+                                    </td>
+                                    <td>
+                                        <a data-id="{{$product->id}}" href="{{route('product.destroy' , $product->id)}}"  class="btn btn-danger silBtn">Sil </a>
                                     </td>
 
 
@@ -78,32 +84,7 @@
     </div>
 @endsection
 @section('js')
-          {{--  <script>
-
-                $(document).on('change','.durum',function (e){
-                    id=$(this).closest('.item').attr('item-id');
-                    statu=$(this).prop('checked');
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        type:" POST",
-                        url: "{{route('product.status',[ $product->id])}}",
-                        data: {
-                            id:id,
-                            statu:statu
-                        },
-                        success:function (response){
-                            if (response.status == 'true'){
-                                alertify.success("Durum aktif olarak değiştirildi!")
-                            }
-                            else {
-                                alertify.error("Durum pasif olarak değiştirildi!")
-                            }
-                        }
-                    });
-                });
-
+            <script>
                 $(document).on('click', '.silBtn', function(e) {
                     e.preventDefault();
                     var item = $(this).closest('.item');
@@ -134,5 +115,5 @@
                         });
                 });
 
-            </script>--}}
+            </script>
 @endsection

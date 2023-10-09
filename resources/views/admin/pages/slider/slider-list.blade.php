@@ -43,14 +43,11 @@
                                         <td>{{$slider->description ?? ''}}</td>
                                         <td>{{$slider->link}}</td>
                                         <td>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" class="durum" data-on="Aktif" value="1" data-off="Pasif" data-onstyle="success" data-offstyle="danger" {{ $slider->status == '1' ? 'checked' : '' }}  data-toggle="toggle">
-                                                </label>
-                                            </div>
-
-
-
+                                            @if($slider->status)
+                                                <a data-id="{{$slider->id}}" href="{{route('slider.status',  ['id' => $slider->id])}}" class="btn btn-success durum">Aktif </a>
+                                            @else
+                                                <a data-id="{{$slider->id}}" href="{{route('slider.status',  ['id' => $slider->id])}}" class="btn btn-danger durum">Pasif</a>
+                                            @endif
                                         </td>
                                         <td class="d-flex">
                                                 <a href="{{route('slider.edit',[$slider->id])}}" class="btn btn-primary mr-2">Düzenle</a>
@@ -93,7 +90,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type:" POST",
-                url: "{{route('slider.status')}}",
+                url: "{{route('slider.status',  ['id' => $slider->id])}}",
                 data: {
                     id:id,
                     statu:statu

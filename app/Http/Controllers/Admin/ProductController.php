@@ -21,7 +21,7 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        $id=$request->id;
+        $id=$request->productID;
         $product=null;
         if (!is_null($id)){
             $product=Product::find($id);
@@ -115,15 +115,52 @@ class ProductController extends Controller
     }
 
 
-    public function destroy(Request $request)
+
+    public function destroy($id)
     {
-        $id=$request->id;
+        try {
+            $item = Product::find($id);
+            if (!$item) {
+                return response()->json(['error' => true, 'message' => 'Ürün bulunamadı.']);
+            }
+
+            deleteFile($item->image);
+            $item->delete();
+
+            return response()->json(['error' => false, 'message' => 'Ürün başarıyla silindi.']);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
+        }
+    }
+/* public function destroy($id)
+    {
         $item = Product::find($id);
         deleteFile($item->image);
         $item->delete();
-        return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
+        return redirect()->route('product.index')->with([
+            'success' => true,
+            'error' => false,
+        ]);
 
-    }
+    }*/
+    /*    public function destroy($id)
+    {
+
+        try {
+            $item=Product::find($id);
+            if ($item){
+                if ($item->hasFile('image')){
+                    deleteFile($item->image);
+                }
+                $item->delete();
+            }
+        }
+        catch (\Exception $exception){
+            return response()->json(['errorMessage' => $exception->getMessage()], 500);
+        }
+        return response()->json(['success' => true], 200);
+
+    }*/
 
     public function status($id){
         $item = Product::find($id);

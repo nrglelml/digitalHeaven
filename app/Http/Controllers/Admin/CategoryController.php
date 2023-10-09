@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class CategoryController extends Controller
@@ -30,30 +32,33 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request)
     {
-        $dosyaadi='';
-        if ($request->hasFile('image')){
-            $resim=$request->file('image');
-            $dosyaadi= time().'-'.Str::slug($request->name);
-            $uzanti=$resim->getClientOriginalExtension();
-            $yukleKlasor='img/category';
-            if ($uzanti=='pdf'||$uzanti=='svg'||$uzanti=='webp'){
-                $resim->move(public_path($yukleKlasor),$dosyaadi.'-'.$uzanti);
-            }
-            else{
-                $resim= Image::make($resim);
-                $resim->encode('webp',75)->save($yukleKlasor.$dosyaadi.'webp');
-
-            }
-
+        $this->validate($request,
+            ['image' => 'mimes:jpeg,jpg,png',],
+            ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
+        $status = 0;
+        if (isset($request->status)){
+            $status = 1;
         }
-        category::create([
+        $category = Category::create([
             'name'=>$request->name,
             'cat_alt'=>$request->cat_alt,
             'description'=>$request->description,
-            'status'=>$request->status,
+            'status'=>$status,
             'image'=>$dosyaadi ?? NULL,
 
         ]);
+        if ($request->file('image'))
+        {
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $fileOriginalName = $file->getClientOriginalName();
+            $explode = explode('.', $fileOriginalName);
+            $fileOriginalName = Str::slug($explode[0], '-') . '_' . now()->format('d-m-Y_H-i-s') . '.' . $extension;
+
+            Storage::putFileAs('public/category', $file, $fileOriginalName);
+            $category->image = 'category/' . $fileOriginalName;
+
+        }
         return back()->withSuccess('Başarıyla Oluşturuldu');
     }
 
@@ -73,17 +78,25 @@ class CategoryController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $category = Category::where('id',$id)->firstOrFail();
-        $imageurl = $category->image;
-
-        $filename='';
+        $status = 0;
+        if (isset($request->status)){
+            $status = 1;
+        }
+        $this->validate($request,
+            ['image' => 'mimes:jpeg,jpg,png',],
+            ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
+        $category=Category::where('id',$id)->firstOrFail();
         if ($request->hasFile('image')){
             deleteFile($category->image);
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $fileOriginalName = $file->getClientOriginalName();
+            $explode = explode('.', $fileOriginalName);
+            $fileOriginalName = Str::slug($explode[0], '-') . '_' . now()->format('d-m-Y_H-i-s') . '.' . $extension;
 
-            $image=$request->file('image');
-            $filename= $request->name;
-            $yukleKlasor = public_path('img/category');
-            $imageurl = addImage($image,$filename,$yukleKlasor);
+            Storage::putFileAs('public/category', $file, $fileOriginalName);
+            $category->image = 'category/' . $fileOriginalName;
+
         }
 
 
@@ -91,8 +104,8 @@ class CategoryController extends Controller
             'name'=>$request->name,
             'link'=>$request->link,
             'description'=>$request->description,
-            'status'=>$request->status,
-            'image'=>$imageurl ,
+            'status'=>$status,
+            'image'=>$category->image ?? $request->image ,
 
         ]);
 
@@ -111,10 +124,17 @@ class CategoryController extends Controller
         return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
     }
 
-    public function status(Request $request) {
-        $update= $request->statu;
-        $updateCheck= $update == false ? '0' : '1';
-        Category::where('id',$request->id)->update(['status'=>$updateCheck]);
-        return response(['error'=>false,'status'=>$update]);
+    public function status($id) {
+        $item = Category::find($id);
+
+        if (!$item) {
+            return abort(404);
+        }
+
+        $item->update(['status' => !$item->status]);
+        return redirect()->route('category.index')->with([
+            'success' => true,
+            'error' => false,
+        ]);
     }
 }

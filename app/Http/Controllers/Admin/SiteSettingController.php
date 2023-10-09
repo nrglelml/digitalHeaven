@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SiteSettingController extends Controller
 {
@@ -37,15 +39,19 @@ class SiteSettingController extends Controller
         $setting=SiteSetting::where('id',$id)->first();
 
         $key=$request->name;
-
+        $this->validate($request,
+            ['image' => 'mimes:jpeg,jpg,png',],
+            ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
         if ($request->hasFile('data')){
-            deleteFile($setting->data);
+            deleteFile($setting->image);
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $fileOriginalName = $file->getClientOriginalName();
+            $explode = explode('.', $fileOriginalName);
+            $fileOriginalName = Str::slug($explode[0], '-') . '_' . now()->format('d-m-Y_H-i-s') . '.' . $extension;
 
-            $image=$request->file('data');
-            $filename= time();
-            $yukleKlasor = public_path('img/setting/');
-            openFile($yukleKlasor);
-            $imageurl = addImage($image,$filename,$yukleKlasor);
+            Storage::putFileAs('public/site_setting', $file, $fileOriginalName);
+            $setting->image = 'site_setting/' . $fileOriginalName;
         }
 
 

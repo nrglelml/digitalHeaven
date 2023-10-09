@@ -44,11 +44,11 @@
                                     <td>{{$category->name}}</td>
                                     <td>{{$category->description}}</td>
                                     <td>
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" class="durum" data-on="Aktif" value="1" data-off="Pasif" data-onstyle="success" data-offstyle="danger" {{ $category->status == '1' ? 'checked' : '' }}  data-toggle="toggle">
-                                            </label>
-                                        </div>
+                                        @if($category->status)
+                                            <a data-id="{{$category->id}}" href="{{route('category.status',  ['id' => $category->id])}}" class="btn btn-success durum">Aktif </a>
+                                        @else
+                                            <a data-id="{{$category->id}}" href="{{route('category.status',  ['id' => $category->id])}}" class="btn btn-danger durum">Pasif</a>
+                                        @endif
                                     </td>
 
                                     <td>
@@ -81,7 +81,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type:" POST",
-            url: "{{route('category.status')}}",
+            url: "{{route('category.status' ,  ['id' => $category->id])}}",
             data: {
                 id:id,
                 statu:statu
