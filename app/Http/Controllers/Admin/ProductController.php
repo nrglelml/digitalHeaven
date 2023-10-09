@@ -108,22 +108,21 @@ class ProductController extends Controller
             'price'=>$request->price,
             'color'=>$request->color,
             'quantity'=>$request->quantity,
+            'image'=>$product->image ?? $request->image,
             'status'=>$status,
         ]);
+        return back()->withSuccess('Başarıyla Güncellendi!');
     }
 
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $id=$request->id;
         $item = Product::find($id);
-
+        deleteFile($item->image);
         $item->delete();
+        return response(['error'=>false,'message'=>'Başarıyla Silindi.']);
 
-
-        return redirect()->route('product.index')->with([
-            'success' => true,
-            'error' => false,
-        ]);
     }
 
     public function status($id){

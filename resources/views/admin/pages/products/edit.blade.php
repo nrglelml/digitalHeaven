@@ -76,7 +76,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="description">İçerik Yazısı</label>
-                                <textarea class="form-control" id="content" name="description" rows="3" placeholder="İçerik Yazısı">{{$product->description ?? ''}}</textarea>
+                                <textarea class="form-control" id="editor" name="description" rows="3" placeholder="İçerik Yazısı">{{$product->description ?? ''}}</textarea>
                             </div>
 
                             <div class="form-group">
@@ -129,4 +129,32 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/translations/tr.js"></script>
+
+    <script>
+
+        const option = {
+            language: 'tr',
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                    { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+                    { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+                    { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+                ]
+            },
+        };
+
+        ClassicEditor
+            .create( document.querySelector( '#editor' ), option )
+            .catch( error => {
+                console.error( error );
+            } );
+    </script>
 @endsection

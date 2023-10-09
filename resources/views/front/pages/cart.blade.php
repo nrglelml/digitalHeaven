@@ -51,11 +51,11 @@
                                     <td>
                                         <div class="input-group mb-3" style="max-width: 120px;">
                                             <div class="input-group-prepend">
-                                                <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                                                <button class="btn btn-outline-primary js-btn-minus decreaseBtn" type="button">&minus;</button>
                                             </div>
                                             <input type="text" class="form-control text-center" value="{{ $item['quantity']}}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                                             <div class="input-group-append">
-                                                <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                                                <button class="btn btn-outline-primary js-btn-plus increaseBtn" type="button">&plus;</button>
                                             </div>
                                         </div>
 
@@ -128,7 +128,7 @@
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
+                                    <button class="btn btn-primary btn-lg py-3 btn-block paymentButton" onclick="window.location='checkout.html'">Ödemeyi Tamamla</button>
                                 </div>
                             </div>
                         </div>
@@ -140,4 +140,77 @@
 
 
 
+@endsection
+
+@section('js')
+    <script>
+        $(document).on('click', '.paymentButton', function(e) {
+            var url = "{{route('cart.form')}}";
+
+
+            @if(!empty(session()->get('cart')))
+                window.location.href = url;
+            @endif
+
+        });
+
+
+        $(document).on('click', '.decreaseBtn', function(e) {
+            $('.orderItem').removeClass('selected');
+            $(this).closest('.orderItem').addClass('selected');
+            sepetUpdate();
+        });
+
+        $(document).on('click', '.increaseBtn', function(e) {
+            $('.orderItem').removeClass('selected');
+            $(this).closest('.orderItem').addClass('selected');
+            sepetUpdate();
+        });
+
+        function sepetUpdate() {
+            var product_id  = $('.selected').closest('.orderItem').attr('data-id');
+            var qty  = $('.selected').closest('.orderItem').find('.qtyItem').val();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type:"POST",
+                url:"{{route('cart.newqty')}}",
+                data:{
+                    product_id:product_id,
+                    qty:qty,
+                },
+                success: function (response) {
+                    $('.selected').find('.itemTotal').text(response.itemTotal+' ₺');
+                    if(qty == 0) {
+                        $('.selected').remove();
+                    }
+                    $('.newTotalPrice').text(response.totalPrice);
+                }
+            });
+        }
+
+
+
+        $(document).on('click', '.removeItem', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            var item = $(this);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type:"POST",
+                url:"{{route('cart.remove')}}",
+                data:formData,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('.count').text(response.sepetCount);
+                    item.closest('.orderItem').remove();
+                }
+            });
+
+        });
+
+    </script>
 @endsection
