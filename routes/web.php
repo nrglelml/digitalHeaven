@@ -26,11 +26,12 @@ Route::middleware('sitesetting')->group(function (){
     Route::get('/contact',[PageController::class,'contact'])->name('contact');
     Route::post('/contact/store',[AjaxController::class,'contactStore'])->name('contact.store');
 
-    Route::get('/cart',[CartController::class,'index'])->name('cart');
-    Route::get('/cart/form',[CartController::class,'index'])->name('cart.form');
+    Route::match(['GET','POST'],'/cart',[CartController::class,'index'])->name('cart');
+    Route::get('/cart/form',[CartController::class,'cartForm'])->name('cart.form');
     Route::post('/cart/add',[CartController::class,'add'])->name('cart.add');
    // Route::post('/cart/remove',[CartController::class,'remove'])->name('cart.remove');
     Route::post('/cart/newqty',[CartController::class,'newqty'])->name('cart.newqty');
+    Route::post('/cart/save',[CartController::class,'cartSave'])->name('cart.save');
 
 
     Route::post('/coupon',[CartController::class,'couponCheck'])->name('coupon.check');

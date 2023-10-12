@@ -32,13 +32,12 @@ class SiteSettingController extends Controller
     }
     public function edit(Request $request){
         $id=$request->id;
-        $setting=SiteSetting::where('id',$id)->first();
+        $setting=SiteSetting::find($id);
         return view('admin.pages.site_setting.edit',compact('setting'));
     }
     public function update(Request $request,$id){
-        $setting=SiteSetting::where('id',$id)->first();
+        $setting = SiteSetting::find($id);
 
-        $key=$request->name;
         $this->validate($request,
             ['image' => 'mimes:jpeg,jpg,png',],
             ['image.mimes' => 'Seçilen resim yalnızca .jpeg, .jpg, .png uzantılı olabilir.',]);
@@ -56,7 +55,7 @@ class SiteSettingController extends Controller
 
 
         $setting->update([
-            'name'=>$key,
+            'name'=>$request->name,
             'data'=>$imageurl ?? $request->data,
             'set_type'=>$request->set_type
         ]);

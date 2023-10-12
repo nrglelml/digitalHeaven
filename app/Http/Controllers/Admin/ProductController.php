@@ -47,6 +47,7 @@ class ProductController extends Controller
             'price'=>$request->price,
             'color'=>$request->color,
             'quantity'=>$request->quantity,
+            'kdv'=>$request->kdv,
             'status'=>$status,
         ]);
         if ($request->file('image'))
@@ -108,6 +109,7 @@ class ProductController extends Controller
             'price'=>$request->price,
             'color'=>$request->color,
             'quantity'=>$request->quantity,
+            'kdv'=>$request->kdv,
             'image'=>$product->image ?? $request->image,
             'status'=>$status,
         ]);

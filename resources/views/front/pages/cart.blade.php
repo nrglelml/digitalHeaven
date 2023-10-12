@@ -60,7 +60,14 @@
                                         </div>
 
                                     </td>
-                                    <td class="itemTotal">{{$item['price'] * $item['quantity']}} ₺</td>
+                                    @php
+                                    $kdvOrani=$item['kdv'] ?? 0;
+                                    $fiyat=$item['price'];
+                                    $adet= $item['quantity'];
+                                       $kdvTutar=( $fiyat * $adet) * ($kdvOrani/100);
+                                       $toplam=($fiyat * $adet) + $kdvTutar;
+                                    @endphp
+                                    <td class="itemTotal">{{$toplam}} ₺</td>
                                     <td>
                                         <form action="" method="POST" class="removeItem">
                                             @csrf
@@ -79,14 +86,7 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <button class="btn btn-primary btn-sm btn-block">Sepeti Güncelle</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-outline-primary btn-sm btn-block">Sepeti Onayla</button>
-                        </div>
-                    </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <form action="{{route('coupon.check')}}" method="POST">
@@ -122,13 +122,13 @@
                                     <span class="text-black">Toplam</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">{{session()->get('total_price' ?? '')}}</strong>
+                                    <strong class="text-black newTotalPrice">{{session()->get('total_price' ?? '')}}</strong>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary btn-lg py-3 btn-block paymentButton" onclick="window.location='checkout.html'">Ödemeyi Tamamla</button>
+                                    <button class="btn btn-primary btn-lg py-3 btn-block paymentButton" onclick="window.location='checkout.html'">Sepeti Onayla</button>
                                 </div>
                             </div>
                         </div>
@@ -158,7 +158,6 @@
             $('.orderItem').removeClass('selected');
             $(this).closest('.orderItem').addClass('selected');
             sepetUpdate();
-
         });
 
         $(document).on('click', '.increaseBtn', function(e) {
@@ -167,7 +166,7 @@
             sepetUpdate();
         });
 
-        function sepetUpdate(product_id,qty,itemevent) {
+        function sepetUpdate() {
             var product_id  = $('.selected').closest('.orderItem').attr('data-id');
             var qty  = $('.selected').closest('.orderItem').find('.qtyItem').val();
             $.ajax({
@@ -185,11 +184,10 @@
                     if(qty == 0) {
                         $('.selected').remove();
                     }
+                    $('.newTotalPrice').text(response.totalPrice);
                 }
-                console.log(response);
             });
         }
-
     </script>
 @endsection
 

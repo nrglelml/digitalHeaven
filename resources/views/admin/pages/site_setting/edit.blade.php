@@ -40,8 +40,15 @@
                             $routelink = route('setting.store');
                         @endphp
                     @endif
+                    @if (isset($setting->set_type) && $setting->set_type == 'image')
+                        <div class="mb-2">
+                            <img src="{{asset($setting->data ?? 'img/resimyok.webp')}}" alt="">
+                        </div>
+
+                    @endif
                     <form action="{{$routelink}}" class="forms-sample" method="POST" enctype="multipart/form-data">
                         @csrf
+
                         @if(!empty($setting->id))
                             @method('PUT')
                         @endif
@@ -55,20 +62,16 @@
                             <option value="email" {{isset($setting->set_type) && $setting->set_type  == 'email' ? 'selected' : ''}}>Email</option>
                         </select>
 
-                        <div class="form-group">
-                            <div class="input-group col-xs-12">
-                                <img src="{{asset($setting->image ?? 'img/resimyok.webp')}}" alt="">
-                            </div>
-                        </div>
+
 
 
                         <div class="form-group">
-                            <label for="name">İsim</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{$setting->name ?? ''}}" placeholder="İsim">
+                            <label for="name">Key</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{$setting->name ?? ''}}" placeholder="Slider Başlık">
                         </div>
 
                         <div class="form-group">
-                            <label for="data">Value</label>
+                            <label for="data">İçerik</label>
 
                             <div class="inputContent">
                                 @if (isset($setting->set_type) && $setting->set_type == 'ckeditor')
@@ -94,6 +97,7 @@
 
 
                         <button type="submit" class="btn btn-primary mr-2">Kaydet</button>
+
                     </form>
                 </div>
             </div>

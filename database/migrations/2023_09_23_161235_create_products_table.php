@@ -23,6 +23,7 @@ return new class extends Migration
             $table->double('price',8,2)->nullable();
             $table->string('color')->nullable();
             $table->integer('quantity')->nullable();
+            $table->integer('kdv')->nullable();
             $table->longText('description')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
