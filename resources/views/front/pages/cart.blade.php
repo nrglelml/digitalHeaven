@@ -40,7 +40,7 @@
                         @if($cartItem)
                             @foreach($cartItem as $key=>$item)
                                 <tbody>
-                                <tr>
+                                <tr class="orderItem" data-id="{{$key}}">
                                     <td class="product-thumbnail">
                                         <img src="{{asset($item['image'])}}" alt="görsel" class="img-fluid">
                                     </td>
@@ -53,16 +53,16 @@
                                             <div class="input-group-prepend">
                                                 <button class="btn btn-outline-primary js-btn-minus decreaseBtn" type="button">&minus;</button>
                                             </div>
-                                            <input type="text" class="form-control text-center" value="{{ $item['quantity']}}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                            <input type="text" class="form-control text-center qtyItem" value="{{ $item['quantity']}}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                                             <div class="input-group-append">
                                                 <button class="btn btn-outline-primary js-btn-plus increaseBtn" type="button">&plus;</button>
                                             </div>
                                         </div>
 
                                     </td>
-                                    <td>{{$item['price'] * $item['quantity']}} ₺</td>
+                                    <td class="itemTotal">{{$item['price'] * $item['quantity']}} ₺</td>
                                     <td>
-                                        <form action="{{route('cart.remove')}}" method="POST" class="removeItem">
+                                        <form action="" method="POST" class="removeItem">
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{$key}}">
                                             <button href="#" class="btn btn-danger btn-sm">X</button>
@@ -141,7 +141,6 @@
 
 
 @endsection
-
 @section('js')
     <script>
         $(document).on('click', '.paymentButton', function(e) {
@@ -159,6 +158,7 @@
             $('.orderItem').removeClass('selected');
             $(this).closest('.orderItem').addClass('selected');
             sepetUpdate();
+
         });
 
         $(document).on('click', '.increaseBtn', function(e) {
@@ -167,7 +167,7 @@
             sepetUpdate();
         });
 
-        function sepetUpdate() {
+        function sepetUpdate(product_id,qty,itemevent) {
             var product_id  = $('.selected').closest('.orderItem').attr('data-id');
             var qty  = $('.selected').closest('.orderItem').find('.qtyItem').val();
             $.ajax({
@@ -185,32 +185,12 @@
                     if(qty == 0) {
                         $('.selected').remove();
                     }
-                    $('.newTotalPrice').text(response.totalPrice);
                 }
+                console.log(response);
             });
         }
 
-
-
-        $(document).on('click', '.removeItem', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            var item = $(this);
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type:"POST",
-                url:"{{route('cart.remove')}}",
-                data:formData,
-                success: function (response) {
-                    toastr.success(response.message);
-                    $('.count').text(response.sepetCount);
-                    item.closest('.orderItem').remove();
-                }
-            });
-
-        });
-
     </script>
 @endsection
+
+

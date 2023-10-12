@@ -90,4 +90,52 @@ class CartController extends Controller
         return back()->withSuccess("Kupon Uygulandı");
     }
 
+    public function newqty(Request $request) {
+        $productID = $request->product_id;
+        $quantity = $request->qty ?? 1;
+
+        $product = Product::find($productID);
+
+        if (!$product) {
+            return back()->withErrors("Ürün Bulunamadı");
+        }
+
+        $cartItem = session('cart', []);
+
+        if (array_key_exists($productID, $cartItem)) {
+            $cartItem[$productID]['quantity'] = $quantity;
+            $itemtotal = $product->price * $quantity; // Ürün miktarının güncellenmiş toplam fiyatını hesaplayın
+        }
+
+        session(['cart' => $cartItem]);
+
+        if ($request->ajax()) {
+            return response()->json(['itemTotal' => $itemtotal, 'message' => 'Sepet Güncellendi']);
+        }
+    }
+/*
+ public function newqty(Request $request) {
+        $productID = $request->product_id;
+        $quantity = $request->qty ?? 1;
+
+        $product = Product::find($productID);
+
+        if (!$product) {
+            return back()->withErrors("Ürün Bulunamadı");
+        }
+
+        $cartItem = session('cart', []);
+
+        if (array_key_exists($productID, $cartItem)) {
+            $cartItem[$productID]['quantity'] += $quantity;
+        }
+        $itemtotal= $product->price *$quantity;
+        session(['cart' => $cartItem]);
+
+        if($request->ajax()) {
+            return response()->json(['itemTotal'=>$itemtotal,  'message'=>'Sepet Güncellendi']);
+        }
+    }
+*/
+
 }
